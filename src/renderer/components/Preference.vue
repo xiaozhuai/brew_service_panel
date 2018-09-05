@@ -2,13 +2,16 @@
     <div class="preference">
 
 
-        <el-form ref="form" label-width="160px">
+        <el-form ref="form" label-width="140px">
             <el-form-item label="Start at login">
                 <el-switch @change="handleStartAtLogin"
                            v-model="startAtLogin"
                            active-color="#13ce66"
                            inactive-color="#ff4949"/>
             </el-form-item>
+            <div style="color: #aaaaaa; margin-bottom: 18px; margin-left: 8px;">
+                Followings will take effect after relaunch {{packageInfo.productName}}
+            </div>
             <el-form-item label="Window width">
                 <el-input-number @change="storeWindowConfig()"
                                  v-model="windowConfig.width"
@@ -40,6 +43,7 @@
         name: "Preference",
         data() {
             return {
+                packageInfo,
                 startAtLogin: false,
                 windowConfig: {},
             }

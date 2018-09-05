@@ -1,17 +1,17 @@
 <template>
     <div class="about">
         <div style="text-align: center;">{{packageInfo.productName}}</div>
-        <div style="text-align: center; margin-bottom: 12px;">{{packageInfo.description}}</div>
+        <div style="text-align: center; margin-bottom: 18px;">{{packageInfo.description}}</div>
         <ul>
             <li><span>Author</span>{{packageInfo.author}}</li>
-            <li><span>Version</span>{{packageInfo.version}} <a @click="checkForUpdates()">check for updates</a></li>
+            <li><span>Version</span>{{packageInfo.version}}</li>
             <li><span>License</span>{{packageInfo.license}}</li>
             <li><span>Repository</span><a @click="openRepository()">{{packageInfo.repository.url}}</a></li>
         </ul>
-        <div style="margin-top: 12px; text-align: right;" v-loading="starsIsLoading">
-            <span style="margin-right: 18px; line-height: 28px; display: inline-block;">Give me a star!</span>
-            <el-badge style="margin-right: 48px;" :value="stars" class="item" :hidden="starsIsLoading || hideStars">
-                <el-button size="mini" circle icon="el-icon-star-on" @click="openRepository()"></el-button>
+        <div style="margin-top: 18px; text-align: right;" v-loading="starsIsLoading">
+            <el-button style="margin-right: 24px;" size="mini" @click="checkForUpdates()" type="text">Check for updates</el-button>
+            <el-badge style="margin-right: 24px;" :value="stars" class="item" :hidden="starsIsLoading || hideStars">
+                <el-button size="mini" @click="openRepository()" type="text">Give me a star!</el-button>
             </el-badge>
         </div>
     </div>

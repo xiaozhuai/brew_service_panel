@@ -78,12 +78,12 @@
                        icon="el-icon-circle-close"
                        size="mini" circle style="float: right;"></el-button>
 
-            <el-popover placement="top-start" width="400" trigger="click" style="float: right;">
+            <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
                 <About/>
                 <el-button icon="el-icon-info" size="mini" circle style="float: right;" slot="reference"></el-button>
             </el-popover>
 
-            <el-popover placement="top-start" width="400" trigger="click" style="float: right;">
+            <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
                 <Preference/>
                 <el-button icon="el-icon-setting" size="mini" circle slot="reference"></el-button>
             </el-popover>
