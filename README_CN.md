@@ -35,10 +35,10 @@ yarn run build
 - [auto-launch](https://github.com/Teamwork/node-auto-launch) Launch applications or executables at login (Mac, Windows, and Linux)
 
 #### 支持
-如果此工具对你有用，请给我个 **star**
+如果此工具对你有用，请不要吝啬你的 **star** ❤️
 
 #### 贡献
-如果你想贡献此项目，欢迎提交pr或开启一个issues。
+如果你想贡献此项目，欢迎提交pr或开启issue。
 
 #### 许可证
 此项目基于 [MIT](LICENSE) 许可证发行。

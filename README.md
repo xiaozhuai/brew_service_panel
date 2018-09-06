@@ -35,10 +35,10 @@ And it depends on:
 - [auto-launch](https://github.com/Teamwork/node-auto-launch) Launch applications or executables at login (Mac, Windows, and Linux)
 
 #### Support
-Give me a **star** if it is useful for you.
+Give me a **star** if it is useful for you ❤️
 
 #### Contribution
-Feel free to make a pull request or open an issues. :)
+Feel free to make a pull request or open an issue.
 
 #### License
 This project is under the [MIT](LICENSE) license.
