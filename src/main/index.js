@@ -53,7 +53,7 @@ function createWindow() {
 }
 
 function initTrayIcon() {
-    trayIcon = new Tray(path.resolve(__static, 'images', 'tray_icon_light.png'));
+    trayIcon = new Tray(path.resolve(__static, 'images', 'tray_icon_Template.png'));
 
     trayIcon.on('click', (event, bounds) => {
         console.log("tray icon on click");
