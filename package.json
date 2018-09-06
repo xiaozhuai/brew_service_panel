@@ -1,7 +1,7 @@
 {
   "name": "brew_service_panel",
   "productName": "BrewServicePanel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "xiaozhuai <798047000@qq.com>",
   "description": "A service manage panel for homebrew",
   "license": "MIT",
@@ -9,7 +9,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/xiaozhuai/brew_service_panel",
-    "api_url": "https://api.github.com/repos/xiaozhuai/brew_service_panel"
+    "api_url": "https://api.github.com/repos/xiaozhuai/brew_service_panel",
+    "release_api_url": "https://api.github.com/repos/xiaozhuai/brew_service_panel/releases"
   },
   "scripts": {
     "build": "node .electron-vue/build.js",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "auto-launch": "^5.0.5",
+    "compare-versions": "^3.4.0",
     "request": "^2.88.0",
     "sudo-prompt": "^8.2.0",
     "vue": "^2.5.16",

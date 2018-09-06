@@ -9,7 +9,11 @@
             <li><span>Repository</span><a @click="openRepository()">{{packageInfo.repository.url}}</a></li>
         </ul>
         <div style="margin-top: 18px; text-align: right;" v-loading="starsIsLoading">
-            <el-button style="margin-right: 24px;" size="mini" @click="checkForUpdates()" type="text">Check for updates</el-button>
+            <el-button style="margin-right: 24px;" size="mini" type="text"
+                       @click="checkForUpdates()"
+                       :icon="isCheckingForUpdates ? 'el-icon-loading' : ''">
+                {{isCheckingForUpdates ? 'Checking...' : 'Check for updates'}}
+            </el-button>
             <el-badge style="margin-right: 24px;" :value="stars" class="item" :hidden="starsIsLoading || hideStars">
                 <el-button size="mini" @click="openRepository()" type="text">Give me a star!</el-button>
             </el-badge>
@@ -21,6 +25,7 @@
     const {shell} = require('electron');
     import request from 'request';
     import packageInfo from "@/../../package.json";
+    import * as compareVersions from 'compare-versions';
 
     export default {
         name: "About",
@@ -30,6 +35,7 @@
                 stars: 0,
                 starsIsLoading: true,
                 hideStars: false,
+                isCheckingForUpdates: false,
             }
         },
         created() {
@@ -57,6 +63,8 @@
 
                     if (response.statusCode !== 200) {
                         console.log('Get repository stars err, status code not 200');
+                        this.hideStars = true;
+                        this.starsIsLoading = false;
                         return;
                     }
 
@@ -70,7 +78,56 @@
                 });
             },
             checkForUpdates() {
-                //todo
+                this.isCheckingForUpdates = true;
+                request.get({
+                    url: this.packageInfo.repository.release_api_url,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
+                    }
+                }, (err, response, body) => {
+                    if (err) {
+                        console.error(err);
+                        this.isCheckingForUpdates = false;
+                        return;
+                    }
+
+                    if (response.statusCode !== 200) {
+                        console.error('Check for updates err, status code not 200');
+                        this.isCheckingForUpdates = false;
+                        return;
+                    }
+
+                    this.isCheckingForUpdates = false;
+
+                    // console.log(body);
+                    let data = JSON.parse(body);
+                    // console.log(data);
+
+                    let latest = data[0];
+
+                    let curVer = this.packageInfo.version;
+                    let latestVer = latest.tag_name;
+
+                    console.log('latest:', latestVer, 'cur:', curVer);
+
+                    if(compareVersions(latestVer, curVer) === 1){ //has updates
+                        this.$confirm(`A new version ${latestVer} now is available, download now?`, 'Info', {
+                            confirmButtonText: 'Yes',
+                            cancelButtonText: 'No',
+                            type: 'success'
+                        }).then(() => {
+                            let releaseUrl = `https://github.com/xiaozhuai/brew_service_panel/releases/tag/${latestVer}`;
+                            shell.openExternal(releaseUrl);
+                        }).catch(() => {
+                            //do nothing
+                        });
+                    }else{
+                        this.$alert(`Version ${latestVer} you are currently using is up-to-date!`, 'Info', {
+                            confirmButtonText: 'Got it!',
+                            type: 'success'
+                        });
+                    }
+                });
             },
         }
     }

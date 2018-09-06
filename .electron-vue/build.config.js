@@ -9,7 +9,7 @@ module.exports = {
     asar: false,
     dir: path.join(__dirname, '../'),
     icon: path.join(__dirname, '../icons/icon'),
-    ignore: /(^\/(src|test|\.[a-z]+|README|yarn|static|dist\/web|path\.config\.js|icons))|\.gitkeep/,
+    ignore: /(^\/(src|test|\.[a-z]+|README|yarn|static|dist\/web|path\.config\.js|icons|previews))|\.gitkeep/,
     out: path.join(__dirname, '../build'),
     overwrite: true,
     platform: process.env.BUILD_TARGET || 'darwin',

@@ -118,7 +118,8 @@ export default class {
     }
 
     static async revealPlistInFinder(plist) {
-        cp.exec(`open -R \"${plist}\"`);
+        console.log('reveal plist', plist);
+        cp.spawn('open', ['-R', plist]);
     }
 
     static async stop(name, as_root, statusCallback, finalCallback) {
