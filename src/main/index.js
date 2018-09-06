@@ -58,14 +58,10 @@ function initTrayIcon() {
     trayIcon.on('click', (event, bounds) => {
         console.log("tray icon on click");
         // console.log(bounds);
-        let x = bounds.x - windowConfig.width / 2 + bounds.width / 2;
-        let y = bounds.height + windowConfig.horizontal_margin;
-        mainWindow.setPosition(x, y);
         if (mainWindow.isVisible()) {
             mainWindow.hide();
         } else {
-            mainWindow.show();
-            mainWindow.webContents.send('refresh-list');
+            showWindow(bounds);
         }
     });
 
@@ -73,6 +69,19 @@ function initTrayIcon() {
         console.log("tray icon on right click");
         // console.log(bounds);
     });
+}
+
+let shouldQuit = app.makeSingleInstance(() => { });
+if(shouldQuit) {
+    app.quit();
+}
+
+function showWindow(bounds) {
+    let x = bounds.x - windowConfig.width / 2 + bounds.width / 2;
+    let y = bounds.height + windowConfig.horizontal_margin;
+    mainWindow.setPosition(x, y);
+    mainWindow.show();
+    mainWindow.webContents.send('refresh-list');
 }
 
 if (process.platform === 'darwin') {
