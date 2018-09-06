@@ -35,7 +35,9 @@ export default class {
     static get(key, defaultData) {
         let filePath = this.checkAndGetPath(key, defaultData);
         try{
-            let obj = JSON.parse(fs.readFileSync(filePath).toString());
+            let str = fs.readFileSync(filePath).toString();
+            // console.log(str);
+            let obj = JSON.parse(str);
             return obj.data;
         }catch (e) {
             return defaultData;

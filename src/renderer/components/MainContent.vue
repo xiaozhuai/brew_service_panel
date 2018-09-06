@@ -32,7 +32,7 @@
                 <template slot-scope="scope">
                     <el-switch :disabled="scope.row.status !== 'stopped'"
                                v-model="serviceMap[scope.row.name].as_root"
-                               @change="storeServiceMap()"
+                               :change="storeServiceMap"
                                active-color="#13ce66" inactive-color="#ff7d7d"/>
                 </template>
             </el-table-column>
@@ -41,7 +41,7 @@
                 <template slot-scope="scope">
                     <el-switch :disabled="scope.row.status !== 'stopped'"
                                v-model="serviceMap[scope.row.name].auto_start"
-                               @change="storeServiceMap()"
+                               :change="storeServiceMap"
                                active-color="#13ce66" inactive-color="#ff7d7d"/>
                 </template>
             </el-table-column>
@@ -95,6 +95,8 @@
     import About from "@/components/About";
     import Preference from "@/components/Preference";
     const {ipcRenderer, shell} = require('electron');
+    import brewServices from "@/../libs/BrewServices";
+    import persistence from "@/../libs/Persistence";
 
     export default {
         name: "MainContent",
@@ -108,9 +110,23 @@
                 serviceMap: {},
             }
         },
+        watch: {
+            serviceMap: {
+                handler(newVal, oldVal){
+                    console.log(newVal);
+                },
+                deep: true
+            },
+            list: {
+                handler(newVal, oldVal){
+                    console.log(newVal);
+                },
+                deep: true
+            }
+        },
         created() {
             this.checkHomebrew();
-            this.serviceMap = this.$persistence.get('service_map', {});
+            this.serviceMap = persistence.get('service_map', {});
             console.log(`service_map: ${JSON.stringify(this.serviceMap, null, 4)}`);
             this.refreshList();
             ipcRenderer.on('refresh-list', () => {
@@ -120,7 +136,7 @@
         methods: {
 
             checkHomebrew() {
-                this.$brewServices.checkHomebrew(ok => {
+                brewServices.checkHomebrew(ok => {
                     this.brewOk = ok;
                 });
             },
@@ -131,7 +147,7 @@
 
             refreshList() {
                 this.listIsLoading = true;
-                this.$brewServices.getList((err, list) => {
+                brewServices.getList((err, list) => {
                     if (err) {
                         this.showError(err);
                         this.listIsLoading = false;
@@ -139,6 +155,13 @@
                     }
 
                     list.forEach(item => {
+                        if (!this.serviceMap.hasOwnProperty(item.name)) {
+                            this.serviceMap[item.name] = {
+                                as_root: false,
+                                auto_start: false,
+                            };
+                        }
+
                         if(item.status === 'started'){
                             if(item.user === 'root'){
                                 this.setAsRoot(item.name, true);
@@ -147,12 +170,6 @@
                             if(!item.plist.startsWith('/usr/local')){
                                 this.setAutoStart(item.name, true);
                             }
-                        }
-
-                        if (!this.serviceMap.hasOwnProperty(item.name)) {
-                            let map = this.serviceMap;
-                            map[item.name] = {};
-                            this.serviceMap = map;
                         }
 
                         if(!this.serviceMap[item.name].hasOwnProperty('as_root')){
@@ -189,7 +206,7 @@
                 let as_root = this.serviceMap[item.name].as_root;
                 let auto_start = this.serviceMap[item.name].auto_start;
 
-                this.$brewServices.start(
+                brewServices.start(
                     item.name, as_root, auto_start,
                     status => {
                         this.setStatus(index, status);
@@ -206,7 +223,7 @@
                 let as_root = this.serviceMap[item.name].as_root;
                 let auto_start = this.serviceMap[item.name].auto_start;
 
-                this.$brewServices.restart(
+                brewServices.restart(
                     item.name, as_root, auto_start,
                     status => {
                         this.setStatus(index, status);
@@ -222,7 +239,7 @@
                 let item = this.list[index];
                 let as_root = this.serviceMap[item.name].as_root;
 
-                this.$brewServices.stop(
+                brewServices.stop(
                     item.name, as_root,
                     status => {
                         this.setStatus(index, status);
@@ -237,34 +254,19 @@
             handleRevealInFinder(index) {
                 let plist = this.list[index].plist;
                 if(plist === '') return;
-                this.$brewServices.revealPlistInFinder(plist);
+                brewServices.revealPlistInFinder(plist);
             },
 
             setAsRoot(name, enable) {
-                let map = this.serviceMap;
-                map[name] = Object.assign(map[name] ? map[name] : {}, {
-                    as_root: enable
-                });
-                this.serviceMap = map;
+                this.serviceMap[name].as_root = enable;
             },
 
             setAutoStart(name, enable) {
-                let map = this.serviceMap;
-                map[name] = Object.assign(map[name] ? map[name] : {}, {
-                    auto_start: enable
-                });
-                this.serviceMap = map;
+                this.serviceMap[name].auto_start = enable;
             },
 
             setStatus(index, status) {
-                let list = this.list;
-                list[index] = Object.assign(
-                    this.list[index],
-                    {
-                        status
-                    }
-                );
-                this.list = list;
+                this.list[index].status = status;
             },
 
             showError(err) {
@@ -277,8 +279,10 @@
                 });
             },
 
-            storeServiceMap() {
-                this.$persistence.set('service_map', this.serviceMap);
+            storeServiceMap(obj1) {
+                console.log('map changed');
+                console.log(obj1);
+                persistence.set('service_map', this.serviceMap);
             },
 
             quit() {

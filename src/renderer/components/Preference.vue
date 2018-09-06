@@ -34,6 +34,7 @@
 <script>
     import packageInfo from "@/../../package.json";
     import * as AutoLaunch from 'auto-launch';
+    import persistence from "@/../libs/Persistence";
 
     const autoLaunchAppAtLogin = new AutoLaunch({
         name: packageInfo.productName
@@ -49,7 +50,7 @@
             }
         },
         created() {
-            this.windowConfig = this.$persistence.get('window', {
+            this.windowConfig = persistence.get('window', {
                 width: 600,
                 height: 300,
                 horizontal_margin: 6
@@ -79,7 +80,7 @@
                     });
             },
             storeWindowConfig() {
-                this.$persistence.set('window', this.windowConfig);
+                persistence.set('window', this.windowConfig);
             },
         }
     }

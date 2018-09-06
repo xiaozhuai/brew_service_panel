@@ -6,14 +6,16 @@
  */
 
 /* eslint-disable */
+const electronDebug = require('electron-debug');
+const {app} = require('electron');
+const electronDevtoolsInstaller = require('electron-devtools-installer');
 
 // Install `electron-debug` with `devtron`
-require('electron-debug')({showDevTools: true});
+electronDebug({showDevTools: true, devToolsMode: 'undocked'});
 
 // Install `vue-devtools`
-require('electron').app.on('ready', () => {
-    let installExtension = require('electron-devtools-installer');
-    installExtension.default(installExtension.VUEJS_DEVTOOLS)
+app.on('ready', () => {
+    electronDevtoolsInstaller.default(electronDevtoolsInstaller.VUEJS_DEVTOOLS)
         .then(() => {
         })
         .catch(err => {

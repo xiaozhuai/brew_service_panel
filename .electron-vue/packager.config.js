@@ -5,6 +5,7 @@ const path = require('path');
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-electron-packager.html
  */
 module.exports = {
+    mode: 'production',
     arch: 'x64',
     asar: false,
     dir: path.join(__dirname, '../'),
