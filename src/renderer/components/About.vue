@@ -122,7 +122,7 @@
                             //do nothing
                         });
                     }else{
-                        this.$alert(`Version ${latestVer} you are currently using is up-to-date!`, 'Info', {
+                        this.$alert(`Version ${curVer} you are currently using is up-to-date!`, 'Info', {
                             confirmButtonText: 'Got it!',
                             type: 'success'
                         });

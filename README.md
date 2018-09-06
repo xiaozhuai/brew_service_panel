@@ -5,7 +5,7 @@
 [[中文文档](README_CN.md)] [[English README](README.md)]
 
 #### Previews
-<video src="previews/preview.webm" controls="controls" />
+![preview](previews/preview.png)
 
 #### Releases
 Download from [releases](https://github.com/xiaozhuai/brew_service_panel/releases) page.
