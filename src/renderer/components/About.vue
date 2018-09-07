@@ -43,6 +43,9 @@
         },
         created() {
             this.refreshStars();
+
+            //auto check for updates silent
+            this.checkForUpdates(true)
         },
         methods: {
             refreshStars() {
@@ -77,7 +80,7 @@
 
                 });
             },
-            checkForUpdates() {
+            checkForUpdates(silent = false) {
                 this.isCheckingForUpdates = true;
                 request.get({
                     url: this.packageInfo.repository.release_api_url,
@@ -122,10 +125,12 @@
                             //do nothing
                         });
                     }else{
-                        this.$alert(`Version ${curVer} you are currently using is up-to-date!`, 'Info', {
-                            confirmButtonText: 'Got it!',
-                            type: 'success'
-                        });
+                        if(!silent){
+                            this.$alert(`Version ${curVer} you are currently using is up-to-date!`, 'Info', {
+                                confirmButtonText: 'Got it!',
+                                type: 'success'
+                            });
+                        }
                     }
                 });
             },
