@@ -29,6 +29,12 @@
         margin-bottom: $arrow-height;
     }
 
+    .v-modal {
+        margin-top: $arrow-height;
+        height: calc( 100% - #{2*$arrow-height} ) !important;
+        border-radius: 5px;
+    }
+
     .popper-window-arrow {
         width: 0;
         height: 0;
