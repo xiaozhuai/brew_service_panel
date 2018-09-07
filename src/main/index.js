@@ -45,11 +45,11 @@ function createWindow() {
         mainWindow = null;
     });
 
-    mainWindow.on('blur', () => {
-        if (process.env.NODE_ENV !== 'development') {
-            mainWindow.hide();
-        }
-    });
+    // mainWindow.on('blur', () => {
+    //     if (process.env.NODE_ENV !== 'development') {
+    //         hideWindow();
+    //     }
+    // });
 }
 
 function initTrayIcon() {
@@ -59,7 +59,7 @@ function initTrayIcon() {
         console.log("tray icon on click");
         // console.log(bounds);
         if (mainWindow.isVisible()) {
-            mainWindow.hide();
+            hideWindow();
         } else {
             showWindow(bounds);
         }
@@ -76,11 +76,17 @@ if(shouldQuit) {
     app.quit();
 }
 
+function hideWindow() {
+    mainWindow.hide();
+    //todo animation
+}
+
 function showWindow(bounds) {
     let x = bounds.x - windowConfig.width / 2 + bounds.width / 2;
     let y = bounds.height + windowConfig.horizontal_margin;
     mainWindow.setPosition(x, y);
     mainWindow.show();
+    //todo animation
     mainWindow.webContents.send('refresh-list');
 }
 
@@ -97,4 +103,9 @@ ipcMain.on('quit-app', () => {
     console.log('ipcMain receive quit-app');
     mainWindow.close();
     app.quit();
+});
+
+ipcMain.on('hide-window', () => {
+    console.log('ipcMain receive hide-window');
+    hideWindow();
 });

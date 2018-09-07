@@ -5,8 +5,8 @@
         <ul>
             <li><span>Author</span>{{packageInfo.author}}</li>
             <li><span>Version</span>{{packageInfo.version}}</li>
-            <li><span>License</span>{{packageInfo.license}}</li>
-            <li><span>Repository</span><a @click="openRepository()">{{packageInfo.repository.url}}</a></li>
+            <li><span>License</span><ExternalLink :href="packageInfo.repository.license_url">{{packageInfo.license}}</ExternalLink></li>
+            <li><span>Repository</span><ExternalLink :href="packageInfo.repository.url">{{packageInfo.repository.url}}</ExternalLink></li>
         </ul>
         <div style="margin-top: 18px; text-align: right;" v-loading="starsIsLoading">
             <el-button style="margin-right: 24px;" size="mini" type="text"
@@ -15,20 +15,23 @@
                 {{isCheckingForUpdates ? 'Checking...' : 'Check for updates'}}
             </el-button>
             <el-badge style="margin-right: 24px;" :value="stars" class="item" :hidden="starsIsLoading || hideStars">
-                <el-button size="mini" @click="openRepository()" type="text">Give me a star!</el-button>
+                <ExternalLinkButton :href="packageInfo.repository.url">Give me a star!</ExternalLinkButton>
             </el-badge>
         </div>
     </div>
 </template>
 
 <script>
+    import ExternalLink from "@/components/ExternalLink";
     const {shell} = require('electron');
     import request from 'request';
     import packageInfo from "@/../../package.json";
     import * as compareVersions from 'compare-versions';
+    import ExternalLinkButton from "@/components/ExternalLinkButton";
 
     export default {
         name: "About",
+        components: {ExternalLinkButton, ExternalLink},
         data() {
             return {
                 packageInfo,
@@ -42,9 +45,6 @@
             this.refreshStars();
         },
         methods: {
-            openRepository() {
-                shell.openExternal(this.packageInfo.repository.url);
-            },
             refreshStars() {
                 this.starsIsLoading = true;
 
@@ -155,14 +155,6 @@
 
     li {
         list-style-type: none;
-    }
-
-    a {
-        cursor: pointer;
-    }
-
-    a:hover {
-        color: teal;
     }
 </style>
 

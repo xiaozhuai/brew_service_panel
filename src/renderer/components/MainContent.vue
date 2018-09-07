@@ -2,8 +2,9 @@
     <div id="brew-check-failed" v-if="!brewOk">
         <img id="brew-logo" src="../assets/homebrew.png"/>
         <div id="brew-check-failed-msg">
-            You do not have homebrew installed, check <a @click="openHomebrewWebsite()">{{brewWebsiteUrl}}</a> for details, or <a @click="quit()">quit</a>.
+            You do not have homebrew installed, check <ExternalLink :href="brewWebsiteUrl">{{brewWebsiteUrl}}</ExternalLink> for details.
         </div>
+        <el-button size="mini" @click="quit()" type="text">Quit</el-button>
     </div>
     <div id="main-content" v-else-if="brewOk">
 
@@ -80,13 +81,17 @@
 
             <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
                 <About/>
-                <el-button icon="el-icon-info" size="mini" circle style="float: right;" slot="reference"></el-button>
+                <el-button icon="el-icon-info" size="mini" circle slot="reference"></el-button>
             </el-popover>
 
             <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
                 <Preference/>
                 <el-button icon="el-icon-setting" size="mini" circle slot="reference"></el-button>
             </el-popover>
+
+            <el-button @click="hideWindow()"
+                       icon="el-icon-arrow-up"
+                       size="mini" circle style="float: right;"></el-button>
         </div>
     </div>
 </template>
@@ -94,13 +99,14 @@
 <script>
     import About from "@/components/About";
     import Preference from "@/components/Preference";
-    const {ipcRenderer, shell} = require('electron');
+    const {ipcRenderer} = require('electron');
     import brewServices from "@/../libs/BrewServices";
     import persistence from "@/../libs/Persistence";
+    import ExternalLink from "@/components/ExternalLink";
 
     export default {
         name: "MainContent",
-        components: {Preference, About},
+        components: {ExternalLink, Preference, About},
         data() {
             return {
                 brewWebsiteUrl: 'https://brew.sh/',
@@ -133,10 +139,6 @@
                 brewServices.checkHomebrew(ok => {
                     this.brewOk = ok;
                 });
-            },
-
-            openHomebrewWebsite() {
-                shell.openExternal(this.brewWebsiteUrl);
             },
 
             refreshList() {
@@ -287,6 +289,10 @@
                     // cancel
                 });
             },
+
+            hideWindow() {
+                ipcRenderer.send('hide-window');
+            },
         }
     }
 </script>
@@ -344,19 +350,10 @@
     #brew-check-failed-msg {
         text-align: center;
         padding-top: 24px;
+        padding-bottom: 24px;
     }
 
     .cell .el-button--mini {
         padding: 3px 0 !important;
-    }
-</style>
-
-<style scoped>
-    a {
-        cursor: pointer;
-    }
-
-    a:hover {
-        color: teal;
     }
 </style>
