@@ -68,6 +68,24 @@ export default class {
         });
     }
 
+    static getByName(name, callback) {
+        this.getList((err, list) => {
+            if(err){
+                callback(err);
+                return;
+            }
+
+            for(let i=0; i<list.length; i++){
+                if(list[i].name === name){
+                    callback(undefined, list[i]);
+                    return;
+                }
+            }
+
+            callback(new Error(`No service named ${name}`));
+        });
+    }
+
     static async start(name, as_root, auto_start, statusCallback, finalCallback) {
         statusCallback('starting');
 
@@ -104,7 +122,7 @@ export default class {
                 finalCallback(undefined, true);
             }else{
                 statusCallback('stopped');
-                finalCallback(new Error('started service error'), false);
+                finalCallback(new Error('start service error'), false);
             }
         }catch(e){
             statusCallback('stopped');
@@ -113,13 +131,53 @@ export default class {
     }
 
     static async restart(name, as_root, auto_start, statusCallback, finalCallback) {
-        await this.stop(name, as_root, statusCallback, finalCallback);
-        await this.start(name, as_root, auto_start, statusCallback, finalCallback);
+        statusCallback('restarting');
+
+        let cmd = `/usr/local/bin/brew services restart ${name}`;
+
+        try{
+            let suc = await new Promise((resolve, reject) => {
+                if (as_root) {
+                    sudo.exec(cmd, this.sudoPromptOption, (err, stdout, stderr) => {
+                        if(err){
+                            reject(err);
+                            return;
+                        }
+                        resolve(stdout.indexOf('Successfully') >= 0);
+                    });
+                } else {
+                    cp.exec(cmd, (err, stdout, stderr) => {
+                        if(err){
+                            reject(err);
+                            return;
+                        }
+                        resolve(stdout.indexOf('Successfully') >= 0);
+                    });
+                }
+            });
+
+            if(suc){
+                statusCallback('started');
+                finalCallback(undefined, true);
+            }else{
+                statusCallback('stopped');
+                finalCallback(new Error('restart service error'), false);
+            }
+        }catch(e){
+            statusCallback('stopped');
+            finalCallback(e, false);
+        }
     }
 
-    static async revealPlistInFinder(plist) {
-        console.log('reveal plist', plist);
-        cp.spawn('open', ['-R', plist]);
+    static revealPlistInFinder(name, callback) {
+        this.getByName(name, (err, item) => {
+            if(err){
+                callback(err);
+                return;
+            }
+            console.log('reveal plist', item.plist);
+            cp.spawn('open', ['-R', item.plist]);
+        });
     }
 
     static async stop(name, as_root, statusCallback, finalCallback) {

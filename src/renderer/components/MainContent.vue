@@ -31,8 +31,8 @@
             <el-table-column align="center" label="As Root" width="80">
                 <template slot-scope="scope">
                     <el-switch :disabled="scope.row.status !== 'stopped'"
-                               v-model="serviceMap[scope.row.name].as_root"
-                               :change="storeServiceMap"
+                               v-model="scope.row.as_root"
+                               @change="storeServiceMap()"
                                active-color="#13ce66" inactive-color="#ff7d7d"/>
                 </template>
             </el-table-column>
@@ -40,28 +40,28 @@
             <el-table-column align="center" label="Auto Start" width="80">
                 <template slot-scope="scope">
                     <el-switch :disabled="scope.row.status !== 'stopped'"
-                               v-model="serviceMap[scope.row.name].auto_start"
-                               :change="storeServiceMap"
+                               v-model="scope.row.auto_start"
+                               @change="storeServiceMap()"
                                active-color="#13ce66" inactive-color="#ff7d7d"/>
                 </template>
             </el-table-column>
 
             <el-table-column align="center" label="Operation" fixed="right" width="180">
                 <template slot-scope="scope">
-                    <el-button :disabled="['starting', 'stopping', 'started'].indexOf(scope.row.status) >= 0"
-                               @click="handleStartService(scope.$index)"
+                    <el-button :disabled="['starting', 'restarting', 'stopping', 'started'].indexOf(scope.row.status) >= 0"
+                               @click="handleStartService(scope.row, scope.$index)"
                                type="text">Start
                     </el-button>
-                    <el-button :disabled="['starting', 'stopping'].indexOf(scope.row.status) >= 0"
-                               @click="handleRestartService(scope.$index)"
+                    <el-button :disabled="['starting', 'restarting', 'stopping'].indexOf(scope.row.status) >= 0"
+                               @click="handleRestartService(scope.row, scope.$index)"
                                type="text">Restart
                     </el-button>
-                    <el-button :disabled="['starting', 'stopping', 'stopped'].indexOf(scope.row.status) >= 0"
-                               @click="handleStopService(scope.$index)"
+                    <el-button :disabled="['starting', 'restarting', 'stopping', 'stopped'].indexOf(scope.row.status) >= 0"
+                               @click="handleStopService(scope.row, scope.$index)"
                                type="text">Stop
                     </el-button>
                     <el-button :disabled="scope.row.status !== 'started'"
-                               @click="handleRevealInFinder(scope.$index)"
+                               @click="handleRevealInFinder(scope.row, scope.$index)"
                                type="text">Plist
                     </el-button>
                 </template>
@@ -111,12 +111,6 @@
             }
         },
         watch: {
-            serviceMap: {
-                handler(newVal, oldVal){
-                    console.log(newVal);
-                },
-                deep: true
-            },
             list: {
                 handler(newVal, oldVal){
                     console.log(newVal);
@@ -154,32 +148,37 @@
                         return;
                     }
 
-                    list.forEach(item => {
-                        if (!this.serviceMap.hasOwnProperty(item.name)) {
-                            this.serviceMap[item.name] = {
-                                as_root: false,
-                                auto_start: false,
-                            };
+                    for (let i = 0; i < list.length; i++) {
+                        let item = list[i];
+                        let name = item.name;
+
+                        if (this.serviceMap.hasOwnProperty(name)) {
+                            if(this.serviceMap[name].hasOwnProperty('as_root')){
+                                list[i].as_root = this.serviceMap[name].as_root;
+                            }else{
+                                list[i].as_root = false;
+                            }
+                            if(this.serviceMap[name].hasOwnProperty('auto_start')){
+                                list[i].auto_start = this.serviceMap[name].auto_start;
+                            }else{
+                                list[i].auto_start = false;
+                            }
+                        }else{
+                            list[i].as_root = false;
+                            list[i].auto_start = false;
                         }
 
                         if(item.status === 'started'){
                             if(item.user === 'root'){
-                                this.setAsRoot(item.name, true);
+                                list[i].as_root = true;
                             }
 
                             if(!item.plist.startsWith('/usr/local')){
-                                this.setAutoStart(item.name, true);
+                                list[i].auto_start = true;
                             }
                         }
+                    }
 
-                        if(!this.serviceMap[item.name].hasOwnProperty('as_root')){
-                            this.setAsRoot(item.name, false);
-                        }
-
-                        if(!this.serviceMap[item.name].hasOwnProperty('auto_start')){
-                            this.setAutoStart(item.name, false);
-                        }
-                    });
                     this.storeServiceMap();
 
 
@@ -194,6 +193,7 @@
                         return 'success';
                     case 'stopped':
                         return 'warning';
+                    case 'restarting':
                     case 'starting':
                     case 'stopping':
                         return 'info';
@@ -201,68 +201,52 @@
                         return 'danger';
                 }
             },
-            handleStartService(index) {
-                let item = this.list[index];
-                let as_root = this.serviceMap[item.name].as_root;
-                let auto_start = this.serviceMap[item.name].auto_start;
-
+            handleStartService(item, index) {
                 brewServices.start(
-                    item.name, as_root, auto_start,
+                    item.name, item.as_root, item.auto_start,
                     status => {
                         this.setStatus(index, status);
                     },
                     (err, suc) => {
                         if(!suc) {
+                            this.refreshList();
                             this.showError(err);
                         }
                     }
                 );
             },
-            handleRestartService(index) {
-                let item = this.list[index];
-                let as_root = this.serviceMap[item.name].as_root;
-                let auto_start = this.serviceMap[item.name].auto_start;
-
+            handleRestartService(item, index) {
                 brewServices.restart(
-                    item.name, as_root, auto_start,
+                    item.name, item.as_root, item.auto_start,
                     status => {
                         this.setStatus(index, status);
                     },
                     (err, suc) => {
                         if(!suc) {
+                            this.refreshList();
                             this.showError(err);
                         }
                     }
                 );
             },
-            handleStopService(index) {
-                let item = this.list[index];
-                let as_root = this.serviceMap[item.name].as_root;
-
+            handleStopService(item, index) {
                 brewServices.stop(
-                    item.name, as_root,
+                    item.name, item.as_root,
                     status => {
                         this.setStatus(index, status);
                     },
                     (err, suc) => {
                         if(!suc) {
+                            this.refreshList();
                             this.showError(err);
                         }
                     }
                 );
             },
-            handleRevealInFinder(index) {
-                let plist = this.list[index].plist;
-                if(plist === '') return;
-                brewServices.revealPlistInFinder(plist);
-            },
-
-            setAsRoot(name, enable) {
-                this.serviceMap[name].as_root = enable;
-            },
-
-            setAutoStart(name, enable) {
-                this.serviceMap[name].auto_start = enable;
+            handleRevealInFinder(item) {
+                brewServices.revealPlistInFinder(item.name, err => {
+                    this.showError(err);
+                });
             },
 
             setStatus(index, status) {
@@ -279,9 +263,15 @@
                 });
             },
 
-            storeServiceMap(obj1) {
-                console.log('map changed');
-                console.log(obj1);
+            storeServiceMap() {
+                this.serviceMap = {};
+                this.list.forEach(item => {
+                    this.serviceMap[item.name] = {
+                        as_root: item.as_root,
+                        auto_start: item.auto_start,
+                    };
+                });
+                console.log(this.serviceMap);
                 persistence.set('service_map', this.serviceMap);
             },
 
