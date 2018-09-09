@@ -70,28 +70,32 @@
         </el-table>
 
         <div id="btn-container">
-            <el-button @click="refreshList()"
-                       :icon="listIsLoading ? 'el-icon-loading' : 'el-icon-refresh'"
-                       :disabled="listIsLoading"
-                       size="mini" circle></el-button>
+            <div id="btn-container-left">
+                <el-button @click="refreshList()"
+                           :icon="listIsLoading ? 'el-icon-loading' : 'el-icon-refresh'"
+                           :disabled="listIsLoading"
+                           size="mini" circle></el-button>
+            </div>
 
-            <el-button @click="quit()"
-                       icon="el-icon-circle-close"
-                       size="mini" circle style="float: right;"></el-button>
+            <div id="btn-container-right">
+                <el-button @click="hideWindow()"
+                           icon="el-icon-arrow-up"
+                           size="mini" circle></el-button>
 
-            <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
-                <About/>
-                <el-button icon="el-icon-info" size="mini" circle slot="reference"></el-button>
-            </el-popover>
+                <el-popover placement="top-start" width="440" trigger="click">
+                    <Preference/>
+                    <el-button icon="el-icon-setting" size="mini" circle slot="reference"></el-button>
+                </el-popover>
 
-            <el-popover placement="top-start" width="440" trigger="click" style="float: right;">
-                <Preference/>
-                <el-button icon="el-icon-setting" size="mini" circle slot="reference"></el-button>
-            </el-popover>
+                <el-popover placement="top-start" width="440" trigger="click">
+                    <About/>
+                    <el-button icon="el-icon-info" size="mini" circle slot="reference"></el-button>
+                </el-popover>
 
-            <el-button @click="hideWindow()"
-                       icon="el-icon-arrow-up"
-                       size="mini" circle style="float: right;"></el-button>
+                <el-button @click="quit()"
+                           icon="el-icon-circle-close"
+                           size="mini" circle></el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -315,12 +319,26 @@
 
     #btn-container {
         background: white;
-        padding: $btn-container-horizontal-padding 12px;
+        padding: $btn-container-horizontal-padding 0;
         border-bottom-left-radius: $main-content-border-radius;
         border-bottom-right-radius: $main-content-border-radius;
     }
+    #btn-container-left {
+        display: inline-block;
+        margin-left: 12px;
+    }
 
-    #btn-container > * + * {
+    #btn-container-left > * + * {
+        margin-left: 8px;
+    }
+
+    #btn-container-right {
+        float: right;
+        display: inline-block;
+        margin-right: 12px;
+    }
+
+    #btn-container-right > * + * {
         margin-left: 8px;
     }
 
