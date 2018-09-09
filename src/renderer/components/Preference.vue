@@ -12,15 +12,17 @@
             <div style="color: #aaaaaa; margin-bottom: 18px; margin-left: 8px;">
                 Followings will take effect after relaunch {{packageInfo.productName}}
             </div>
-            <el-form-item label="Window width">
-                <el-input-number @change="storeWindowConfig()"
-                                 v-model="windowConfig.width"
-                                 type="number" :min="600"/>
-            </el-form-item>
-            <el-form-item label="Window height">
-                <el-input-number @change="storeWindowConfig()"
-                                 v-model="windowConfig.height"
-                                 type="number" :min="300"/>
+            <el-form-item label="Window size">
+                <el-col :span="12">
+                    <el-input-number @change="storeWindowConfig()"
+                                     v-model="windowConfig.width"
+                                     type="number" :min="600"/>
+                </el-col>
+                <el-col :span="12">
+                    <el-input-number @change="storeWindowConfig()"
+                                     v-model="windowConfig.height"
+                                     type="number" :min="300"/>
+                </el-col>
             </el-form-item>
             <el-form-item label="Horizontal margin">
                 <el-input-number @change="storeWindowConfig()"
