@@ -33,9 +33,12 @@ function createWindow() {
         resizable: false,
         frame: false,
         transparent: true,
+        maximizable: false,
+        minimizable: false,
         show: false,
         movable: false,
         alwaysOnTop: true,
+        titleBarStyle: 'customButtonsOnHover',
         fullscreenable: false,
     });
 

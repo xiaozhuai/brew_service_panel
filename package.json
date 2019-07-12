@@ -1,7 +1,7 @@
 {
   "name": "brew_service_panel",
   "productName": "BrewServicePanel",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "xiaozhuai <798047000@qq.com>",
   "description": "A service manage panel for homebrew",
   "license": "MIT",
