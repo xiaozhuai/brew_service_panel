@@ -39,7 +39,7 @@
     "@babel/runtime": "^7.0.0",
     "@types/node": "^10.9.4",
     "@types/request": "^2.47.1",
-    "ajv": "^6.5.0",
+    "ajv": "^6.12.3",
     "babel-loader": "^8.0.2",
     "babili-webpack-plugin": "^0.1.2",
     "chalk": "^2.4.1",
